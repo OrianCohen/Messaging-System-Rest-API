@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, make_response
 from flask_restful import Resource, Api, reqparse
 from datetime import datetime
 
@@ -6,7 +6,7 @@ app = Flask(__name__)
 api = Api(app)
 
 MESSAGE = {
-    'message1': {'sender': 'Oriancohen@gmail.com',
+    'message1': {'sender': 'Orian',
                  'receiver': 'support@apple.com',
                  'message': 'I would like to know if you working this week? I want to purchase the Iphon 11 PRO',
                  'subject': 'Purchase new IPHONE',
@@ -19,7 +19,6 @@ MESSAGE = {
                  'creationDate': datetime.timestamp(datetime.now())
                  }
 }
-
 
 # If message do not exist ERROR
 def abort_if_todo_doesnt_exist(messageId):
@@ -51,7 +50,8 @@ class ReadMessage(Resource):
 
 # Shows a list of all messages and lets you POST to add new message
 class AllMessage(Resource):
-    def get(self):
+    @staticmethod
+    def get():
         return MESSAGE
 
     def post(self):
