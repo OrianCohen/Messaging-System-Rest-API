@@ -103,7 +103,7 @@ class ReadMessage(Resource):
 class UnreadMessage(Resource):
     def get(self, user_name):
         message = [[message for message in MESSAGEJSON if
-                    (message['receiver'] == user_name.lower()) and (
+                    (message['receiver'].lower() == user_name.lower()) and (
                                 message['readStatus'] == False)]]
         if len(message) == 0:
             abort(404)
