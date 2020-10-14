@@ -1,69 +1,117 @@
+from random import random
+
 from flask import Flask, jsonify, request, abort, make_response
 from flask_restful import Resource, Api, reqparse
 from datetime import datetime
+import requests
 
 app = Flask(__name__)
 api = Api(app)
 
-MESSAGE = {
-    'message1': {'sender': 'Orian',
-                 'receiver': 'support@apple.com',
-                 'message': 'I would like to know if you working this week? I want to purchase the Iphon 11 PRO',
-                 'subject': 'Purchase new IPHONE',
-                 'creationDate': datetime.timestamp(datetime.now())
-                 },
-    'message2': {'sender': 'Loren',
-                 'receiver': 'Bank of America',
-                 'message': 'I would like to open a new bank account',
-                 'subject': 'New account',
-                 'creationDate': datetime.timestamp(datetime.now())
-                 }
-}
+MESSAGEJSON = [
+    {
+        "id": 1,
+        "sender": "Orian",
+        "receiver": "support@apple.com",
+        "message": "I would like to know if you working this week? I want to purchase the Iphon 11 PRO",
+        "subject": "Purchase new IPHONE",
+        "creationDate": "datetime.timestamp(datetime.now())",
+        "readStatus": True
 
-# If message do not exist ERROR
-def abort_if_todo_doesnt_exist(messageId):
-    if messageId not in MESSAGE:
-        abort(404, message="message1 {} doesn't exist".format(messageId))
+    },
+    {
+        "id": 2,
+        "sender": "Loren",
+        "receiver": "Bank of America",
+        "message": "I would like to open a new bank account",
+        "subject": "New account",
+        "creationDate": "datetime.timestamp(datetime.now())",
+        "readStatus": True
+    },
+    {
+        "id": 3,
+        "sender": "Loren",
+        "receiver": "Orian",
+        "message": "XXXXX",
+        "subject": "New account",
+        "creationDate": "datetime.timestamp(datetime.now())",
+        "readStatus": False
+    }
+]
 
-
-parser = reqparse.RequestParser()
-parser.add_argument('new_message')
-
-
-# Find an existing message, delete message by message ID, add new message
-class ReadMessage(Resource):
-    def get(self, messageId):
-        abort_if_todo_doesnt_exist(messageId)
-        return {messageId: MESSAGE[messageId]}
-
-    def delete(self, messageId):
-        abort_if_todo_doesnt_exist(messageId)
-        del MESSAGE[messageId]
-        return '', 204
-
-    def put(self, messageId):
-        args = parser.parse_args()
-        new_message = {'messageNew': args['new_message']}
-        MESSAGE[messageId] = new_message
-        return new_message, 201
+message_put_args = reqparse.RequestParser()
+message_put_args.add_argument("sender", type=str)
+message_put_args.add_argument("receiver", type=str)
+message_put_args.add_argument("message", type=str)
+message_put_args.add_argument("subject", type=str)
 
 
-# Shows a list of all messages and lets you POST to add new message
-class AllMessage(Resource):
+def abort_if_user_exist(user_name):
+    abort(409, message="")
+
+
+def abort_if_user_name_doesnt_exist(user_name):
+    for message in MESSAGEJSON:
+        if message['sender'] == user_name:
+            return
+    abort(409, message="User nor exist")
+
+
+class Message(Resource):
+    # read a random messages
     @staticmethod
     def get():
-        return MESSAGE
-
-    def post(self):
-        args = parser.parse_args()
-        message_id = int(max(MESSAGE.keys()).lstrip('message')) + 1
-        message_id = 'message%i' % message_id
-        MESSAGE[message_id] = {'messageNew': args['new_message']}
-        return MESSAGE[message_id], 201
+        len_date = len(MESSAGEJSON)
+        return MESSAGEJSON[random(len_date)]
 
 
-api.add_resource(AllMessage, '/messages')
-api.add_resource(ReadMessage, '/messages/<messageId>')
+class ReadMessage(Resource):
+    # get all the messages from sender or receiver (for specific name)
+    def get(self, user_name):
+        message = [[message for message in MESSAGEJSON if
+                    (message['sender'].lower() == user_name.lower() or message[
+                        'receiver'].lower() == user_name.lower())]]
+        if len(message) == 0:
+            abort(404)
+
+        # mark as read message
+        for i in message:
+            i['readStatus'] = True
+        return jsonify({'Message by user name': message[0]})
+
+    # add new message to our data
+    def put(self, user_name):
+        new_message = message_put_args.parse_args()
+        new_message['id'] = MESSAGEJSON[-1]['id'] + 1
+        new_message['creationDate'] = str(datetime.now())
+        new_message['readStatus'] = False
+        MESSAGEJSON.append(new_message)
+        return MESSAGEJSON[new_message['id'] -1]
+
+    # delete message as receiver or sender (for specific name)
+    def delete(self, user_name):
+        # abort_if_user_name_doesnt_exist(user_name)
+        message = [message for message in MESSAGEJSON if
+                   (message['sender'] == user_name or message['receiver'] == user_name)]
+        MESSAGEJSON.remove(message[0])
+        return jsonify({'Result': True})
+
+
+class UnreadMessage(Resource):
+    def get(self, user_name):
+        # abort_if_user_name_doesnt_exist(user_name)
+        message = [message for message in MESSAGEJSON if (message['sender'] == user_name or message['receiver'] == user_name) and (message['readStatus'] == False)]
+        return jsonify({'Unread Messages': message[0]})
+
+
+# return all messages (it can be only 1 message as well)
+api.add_resource(Message, '/messages')
+
+# return all messages for specific user + delete message + add new message
+api.add_resource(ReadMessage, '/messages/read/<user_name>')
+
+# return all unread messages for specific user
+api.add_resource(ReadMessage, '/messages/unread/<user_name>')
 
 if __name__ == '__main__':
     app.run(debug=True)

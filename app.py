@@ -3,7 +3,7 @@ from flask_restful import Api
 from flask_httpauth import HTTPBasicAuth
 app = Flask(__name__)
 api = Api(app)
-
+# http://127.0.0.1:5000/message/api/v1.0/messages
 # Authentication access for existing user
 auth = HTTPBasicAuth()
 
