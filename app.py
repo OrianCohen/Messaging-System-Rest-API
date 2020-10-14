@@ -1,6 +1,3 @@
-import os
-from random import random
-
 from flask import Flask, jsonify, request, abort, make_response
 from flask_restful import Resource, Api, reqparse
 from datetime import datetime
@@ -106,7 +103,7 @@ class ReadMessage(Resource):
 class UnreadMessage(Resource):
     def get(self, user_name):
         message = [[message for message in MESSAGEJSON if
-                    (message['receiver'].lower() == user_name.lower()) and (
+                    (message['receiver'] == user_name.lower()) and (
                                 message['readStatus'] == False)]]
         if len(message) == 0:
             abort(404)
