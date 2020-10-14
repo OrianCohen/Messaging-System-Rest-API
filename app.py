@@ -1,3 +1,4 @@
+import os
 from random import random
 
 from flask import Flask, jsonify, request, abort, make_response
@@ -122,4 +123,4 @@ api.add_resource(ReadMessage, '/messages/read/<user_name>')
 api.add_resource(UnreadMessage, '/messages/unread/<user_name>')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.envirron.get("PORT", 5000)))
