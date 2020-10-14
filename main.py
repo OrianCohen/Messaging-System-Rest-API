@@ -36,6 +36,15 @@ MESSAGEJSON = [
         "subject": "New account",
         "creationDate": "datetime.timestamp(datetime.now())",
         "readStatus": False
+    },
+    {
+        "id": 4,
+        "sender": "Loren",
+        "receiver": "Coral",
+        "message": "XXXXX",
+        "subject": "New account",
+        "creationDate": "datetime.timestamp(datetime.now())",
+        "readStatus": False
     }
 ]
 
@@ -45,24 +54,22 @@ message_put_args.add_argument("receiver", type=str)
 message_put_args.add_argument("message", type=str)
 message_put_args.add_argument("subject", type=str)
 
-
-def abort_if_user_exist(user_name):
-    abort(409, message="")
-
-
-def abort_if_user_name_doesnt_exist(user_name):
-    for message in MESSAGEJSON:
-        if message['sender'] == user_name:
-            return
-    abort(409, message="User nor exist")
+#
+# def abort_if_user_exist(user_name):
+#     abort(409, message="")
+#
+#
+# def abort_if_user_name_doesnt_exist(user_name):
+#     for item in MESSAGEJSON:
+#         if user_name not in item:
+#             abort(409, message="User nor exist")
 
 
 class Message(Resource):
     # read a random messages
     @staticmethod
     def get():
-        len_date = len(MESSAGEJSON)
-        return MESSAGEJSON[random(len_date)]
+        return MESSAGEJSON[0]
 
 
 class ReadMessage(Resource):
@@ -74,9 +81,6 @@ class ReadMessage(Resource):
         if len(message) == 0:
             abort(404)
 
-        # mark as read message
-        for i in message:
-            i['readStatus'] = True
         return jsonify({'Message by user name': message[0]})
 
     # add new message to our data
@@ -96,11 +100,14 @@ class ReadMessage(Resource):
         MESSAGEJSON.remove(message[0])
         return jsonify({'Result': True})
 
-
+# get all unread messages by name
 class UnreadMessage(Resource):
     def get(self, user_name):
-        # abort_if_user_name_doesnt_exist(user_name)
-        message = [message for message in MESSAGEJSON if (message['sender'] == user_name or message['receiver'] == user_name) and (message['readStatus'] == False)]
+        # abort()
+        message = [[message for message in MESSAGEJSON if
+                    (message['sender'].lower() == user_name.lower() or message[
+                        'sender'] == user_name or message['receiver'] == user_name) and (
+                                message['readStatus'] == False)]]
         return jsonify({'Unread Messages': message[0]})
 
 
@@ -111,7 +118,7 @@ api.add_resource(Message, '/messages')
 api.add_resource(ReadMessage, '/messages/read/<user_name>')
 
 # return all unread messages for specific user
-api.add_resource(ReadMessage, '/messages/unread/<user_name>')
+api.add_resource(UnreadMessage, '/messages/unread/<user_name>')
 
 if __name__ == '__main__':
     app.run(debug=True)
