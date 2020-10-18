@@ -10,7 +10,7 @@ MESSAGEJSON = [
     {
         "id": 1,
         "sender": "Orian",
-        "receiver": "support@apple.com",
+        "receiver": "shaishai@apple.com",
         "message": "I would like to know if you working this week? I want to purchase the Iphon 11 PRO",
         "subject": "Purchase new IPHONE",
         "creationDate": "datetime.timestamp(datetime.now())",
