@@ -9,7 +9,6 @@ api = Api(app)
 auth = HTTPBasicAuth
 
 message_put_args = reqparse.RequestParser()
-message_put_args.add_argument("sender", type=str)
 message_put_args.add_argument("receiver", type=str, help="Name of the person is required", required=True)
 message_put_args.add_argument("message", type=str, help="Message content is requires", required=True)
 message_put_args.add_argument("subject", type=str, help="Message subject is required", required=True)
