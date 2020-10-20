@@ -10,9 +10,9 @@ auth = HTTPBasicAuth
 
 message_put_args = reqparse.RequestParser()
 message_put_args.add_argument("sender", type=str)
-message_put_args.add_argument("receiver", type=str)
-message_put_args.add_argument("message", type=str)
-message_put_args.add_argument("subject", type=str)
+message_put_args.add_argument("receiver", type=str, help="Name of the person is required", required=True)
+message_put_args.add_argument("message", type=str, help="Message content is requires", required=True)
+message_put_args.add_argument("subject", type=str, help="Message subject is required", required=True)
 
 with open('data.json', 'rb') as f:
     jsondata = json.load(f)
@@ -38,15 +38,14 @@ class Message(Resource):
         else:
             abort(404, "User not exist in our data")
 
-    # Write new message
-    def post(self, user_name):
-        url = 'https://mighty-savannah-89613.herokuapp.com'
+    def put(self, user_name):
         new_message = message_put_args.parse_args()
         new_message['id'] = jsondata['restapi'][-1]['id'] + 1
         new_message['creationDate'] = str(datetime.now())
+        new_message['sender'] = user_name
         new_message['readStatus'] = False
-        requests.post(url, json=jsondata)
-        return jsonify({'Result': True})
+        # requests.post('http://127.0.0.1:5000/messages/read/' + user_name, new_message)
+        return {user_name: new_message}
 
     # Delete message as receiver or sender (for specific name)
     def delete(self, user_name):
