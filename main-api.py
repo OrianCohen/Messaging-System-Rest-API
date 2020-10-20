@@ -6,6 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 api = Api(app)
+auth = HTTPBasicAuth
 
 message_put_args = reqparse.RequestParser()
 message_put_args.add_argument("sender", type=str)
@@ -18,14 +19,14 @@ with open('data.json', 'rb') as f:
 
 
 class ReadMessage(Resource):
-    # read a random messages
+    # Read a random messages
     @staticmethod
     def get():
         return jsondata['restapi'][2]
 
 
 class Message(Resource):
-    # get all the messages by user name (for sender or receiver)
+    # Get all the messages by user name (for sender or receiver)
     def get(self, user_name):
         messages = []
         for message_ in jsondata['restapi']:
@@ -37,9 +38,9 @@ class Message(Resource):
         else:
             abort(404, "User not exist in our data")
 
-    # write new message
+    # Write new message
     def post(self, user_name):
-        url = 'http://127.0.0.1:5000'
+        url = 'https://mighty-savannah-89613.herokuapp.com'
         new_message = message_put_args.parse_args()
         new_message['id'] = jsondata['restapi'][-1]['id'] + 1
         new_message['creationDate'] = str(datetime.now())
@@ -47,7 +48,7 @@ class Message(Resource):
         requests.post(url, json=jsondata)
         return jsonify({'Result': True})
 
-    # delete message as receiver or sender (for specific name)
+    # Delete message as receiver or sender (for specific name)
     def delete(self, user_name):
         flag = False
         # remove all messages from our data(JSON) by user name (only sender)
@@ -62,7 +63,7 @@ class Message(Resource):
             return jsonify({'Result': True})
 
 
-# get all unread messages by user name (only receiver)
+# Get all unread messages by user name (only receiver)
 class UnreadMessage(Resource):
     def get(self, user_name):
         messages = []
