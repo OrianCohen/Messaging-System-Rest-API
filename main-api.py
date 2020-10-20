@@ -38,6 +38,7 @@ class Message(Resource):
         else:
             abort(404, "User not exist in our data")
 
+    # Writing new message
     def put(self, user_name):
         new_message = message_put_args.parse_args()
         new_message['id'] = jsondata['restapi'][-1]['id'] + 1
