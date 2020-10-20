@@ -1,22 +1,41 @@
-
 {
-  "MESSAGEJSON": [
+"restapi" : [
     {
-                  "id" : 1,
-                 "sender": "Oriancohen@gmail.com",
-                 "receiver": "support@apple.com",
-                 "message": "I would like to know if you working this week? I want to purchase the Iphon 11 PRO",
-                 "subject": "Purchase new IPHONE",
-                 "creationDate": "datetime.timestamp(datetime.now())"
+        "id": 1,
+        "sender": "Orian",
+        "receiver": "shaishai@apple.com",
+        "message": "I would like to know if you working this week? I want to purchase the Iphon 11 PRO",
+        "subject": "Purchase new IPHONE",
+        "creationDate": "datetime.timestamp(datetime.now())",
+        "readStatus": "True"
+
     },
     {
-                 "id" : 2,
-                 "sender": "Loren",
-                 "receiver": "Bank of America",
-                 "message": "I would like to open a new bank account",
-                 "subject": "New account",
-                 "creationDate": "datetime.timestamp(datetime.now())"
+        "id": 2,
+        "sender": "Loren",
+        "receiver": "Bank of America",
+        "message": "I would like to open a new bank account",
+        "subject": "New account",
+        "creationDate": "datetime.timestamp(datetime.now())",
+        "readStatus": "False"
+    },
+    {
+        "id": 3,
+        "sender": "Loren",
+        "receiver": "Orian",
+        "message": "XXXXX",
+        "subject": "New account",
+        "creationDate": "datetime.timestamp(datetime.now())",
+        "readStatus": "False"
+    },
+    {
+        "id": 4,
+        "sender": "Loren",
+        "receiver": "Coral",
+        "message": "XXXXX",
+        "subject": "New account",
+        "creationDate": "datetime.timestamp(datetime.now())",
+        "readStatus": "False"
     }
-
-  ]
+]
 }
