@@ -8,7 +8,7 @@ app = Flask(__name__)
 api = Api(app)
 
 message_put_args = reqparse.RequestParser()
-message_put_args.add_argument("sender", type=str, )
+message_put_args.add_argument("sender", type=str)
 message_put_args.add_argument("receiver", type=str)
 message_put_args.add_argument("message", type=str)
 message_put_args.add_argument("subject", type=str)
@@ -17,14 +17,14 @@ with open('data.json', 'rb') as f:
     jsondata = json.load(f)
 
 
-class Message(Resource):
+class ReadMessage(Resource):
     # read a random messages
     @staticmethod
     def get():
         return jsondata['restapi'][2]
 
 
-class ReadMessage(Resource):
+class Message(Resource):
     # get all the messages by user name (for sender or receiver)
     def get(self, user_name):
         messages = []
@@ -77,10 +77,10 @@ class UnreadMessage(Resource):
 
 
 # return all messages (it can be only 1 message as well)
-api.add_resource(Message, '/messages')
+api.add_resource(ReadMessage, '/messages')
 
 # return all messages for specific user + delete message + add new message
-api.add_resource(ReadMessage, '/messages/read/<user_name>')
+api.add_resource(Message, '/messages/read/<user_name>')
 
 # return all unread messages for specific user
 api.add_resource(UnreadMessage, '/messages/unread/<user_name>')
